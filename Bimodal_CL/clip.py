@@ -366,7 +366,7 @@ def concat_all_gather(tensor):
     """
     distributed = False
     if not distributed:
-        return [tensor]
+        return torch.cat([tensor], dim=0)
     
     tensors_gather = [torch.ones_like(tensor)
         for _ in range(torch.distributed.get_world_size())]
