@@ -55,7 +55,7 @@ class CLIP(nn.Module):
             self.text_encoder = RobertaModel.from_pretrained(text_encoder, local_files_only=True)
             self.text_proj = nn.Linear(1024, embed_dim)
         else:
-            self.text_encoder = AutoModel.from_pretrained(text_encoder, local_files_only=True)
+            self.text_encoder = AutoModel.from_pretrained(text_encoder, local_files_only=False)
             self.text_proj = nn.Linear(768, embed_dim)
 
         if not init_model:

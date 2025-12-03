@@ -440,7 +440,7 @@ def main(args):
     if args.text_encoder == 'roberta-large':
         tokenizer = RobertaTokenizer.from_pretrained(args.text_encoder, local_files_only=True)
     else:
-        tokenizer = AutoTokenizer.from_pretrained(args.text_encoder, local_files_only=True)
+        tokenizer = AutoTokenizer.from_pretrained(args.text_encoder, local_files_only=False)
 
     #### Zero-shot transfer ####
     zeroshot_dataloader = create_zeroshot_dataloader(dataset_name=args.zs_dataset, data_folder=args.zs_datafolder, image_size=args.image_res)
