@@ -403,9 +403,6 @@ def main(args):
         print("len of sbu data:", len(sbu_dataset))
 
     print("len of train_dataset:", args.data_number)
-    print("len of coco val/test:", len(val_coco_dataset), len(test_coco_dataset))
-    print("len of flickr val/test:", len(val_flickr_dataset), len(test_flickr_dataset))
-    print("len of sbu data:", len(sbu_dataset))
 
     if args.extract_data:
         idx_list = []
