@@ -739,13 +739,14 @@ def main(args):
             train_stats = train(model, train_loader, optimizer, optimizer_tempnet, tokenizer, epoch, max_epoch, warmup_steps, 
                                 device, lr_scheduler, grad_scaler, args)
             
+            
+        if args.evaluate:
             score_val_i2t_coco, score_val_t2i_coco = evaluation(model_without_ddp, val_coco_loader, tokenizer, device, args)
             score_test_i2t_coco, score_test_t2i_coco = evaluation(model_without_ddp, test_coco_loader, tokenizer, device, args)
 
             score_val_i2t_flickr, score_val_t2i_flickr = evaluation(model_without_ddp, val_flickr_loader, tokenizer, device, args)
             score_test_i2t_flickr, score_test_t2i_flickr = evaluation(model_without_ddp, test_flickr_loader, tokenizer, device, args)
-
-        if args.evaluate:
+            
             zeroshot_results = zeroshot_transfer(model_without_ddp, zeroshot_dataloader, args.zs_dataset, tokenizer, device)
     
         if utils.is_main_process() and args.evaluate:  
