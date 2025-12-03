@@ -160,6 +160,8 @@ class CLIP(nn.Module):
 
 @torch.no_grad()
 def concat_all_gather(tensor):
+
+    return [tensor]
     """
     Performs all_gather operation on the provided tensors.
     *** Warning ***: torch.distributed.all_gather has no gradient.
