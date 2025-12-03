@@ -393,10 +393,15 @@ def main(args):
         train_dataset = create_train_dataset('imagenet100', args)
 
     args.data_number = len(train_dataset)
+    
+    if args.evaluate:
+        val_coco_dataset, test_coco_dataset = create_val_dataset('re', args, args.val_coco_file, args.coco_image_root, args.test_coco_file)
+        val_flickr_dataset, test_flickr_dataset = create_val_dataset('re', args, args.val_flickr_file, args.flickr_image_root, args.test_flickr_file)
+        sbu_dataset = create_val_dataset('re', args, args.sbu_file, args.sbu_image_root)
+        print("len of coco val/test:", len(val_coco_dataset), len(test_coco_dataset))
+        print("len of flickr val/test:", len(val_flickr_dataset), len(test_flickr_dataset))
+        print("len of sbu data:", len(sbu_dataset))
 
-    val_coco_dataset, test_coco_dataset = create_val_dataset('re', args, args.val_coco_file, args.coco_image_root, args.test_coco_file)
-    val_flickr_dataset, test_flickr_dataset = create_val_dataset('re', args, args.val_flickr_file, args.flickr_image_root, args.test_flickr_file)
-    sbu_dataset = create_val_dataset('re', args, args.sbu_file, args.sbu_image_root)
     print("len of train_dataset:", args.data_number)
     print("len of coco val/test:", len(val_coco_dataset), len(test_coco_dataset))
     print("len of flickr val/test:", len(val_flickr_dataset), len(test_flickr_dataset))
@@ -427,12 +432,13 @@ def main(args):
 
     train_loader = create_train_loader(train_dataset, samplers[0], args.batch_size_train, 8, None, drop_last=False)
 
-    val_coco_loader, test_coco_loader = create_val_loader([val_coco_dataset, test_coco_dataset], samplers[1:], 
-                                                          [args.batch_size_test]*2, [8]*2, [None]*2)
-    val_flickr_loader, test_flickr_loader = create_val_loader([val_flickr_dataset, test_flickr_dataset], samplers[1:], 
-                                                              [args.batch_size_test]*2, [8]*2, [None]*2)
-    sbu_loader= create_val_loader([sbu_dataset], [None], [args.batch_size_test], [32], [None])[0]
-    
+    if args.evaluate:
+        val_coco_loader, test_coco_loader = create_val_loader([val_coco_dataset, test_coco_dataset], samplers[1:], 
+                                                            [args.batch_size_test]*2, [8]*2, [None]*2)
+        val_flickr_loader, test_flickr_loader = create_val_loader([val_flickr_dataset, test_flickr_dataset], samplers[1:], 
+                                                                [args.batch_size_test]*2, [8]*2, [None]*2)
+        sbu_loader= create_val_loader([sbu_dataset], [None], [args.batch_size_test], [32], [None])[0]
+        
 
     if args.text_encoder == 'roberta-large':
         tokenizer = RobertaTokenizer.from_pretrained(args.text_encoder, local_files_only=True)
@@ -731,16 +737,16 @@ def main(args):
             train_stats = train(model, train_loader, optimizer, optimizer_tempnet, tokenizer, epoch, max_epoch, warmup_steps, 
                                 device, lr_scheduler, grad_scaler, args)
             
-        score_val_i2t_coco, score_val_t2i_coco = evaluation(model_without_ddp, val_coco_loader, tokenizer, device, args)
-        score_test_i2t_coco, score_test_t2i_coco = evaluation(model_without_ddp, test_coco_loader, tokenizer, device, args)
+            score_val_i2t_coco, score_val_t2i_coco = evaluation(model_without_ddp, val_coco_loader, tokenizer, device, args)
+            score_test_i2t_coco, score_test_t2i_coco = evaluation(model_without_ddp, test_coco_loader, tokenizer, device, args)
 
-        score_val_i2t_flickr, score_val_t2i_flickr = evaluation(model_without_ddp, val_flickr_loader, tokenizer, device, args)
-        score_test_i2t_flickr, score_test_t2i_flickr = evaluation(model_without_ddp, test_flickr_loader, tokenizer, device, args)
+            score_val_i2t_flickr, score_val_t2i_flickr = evaluation(model_without_ddp, val_flickr_loader, tokenizer, device, args)
+            score_test_i2t_flickr, score_test_t2i_flickr = evaluation(model_without_ddp, test_flickr_loader, tokenizer, device, args)
 
         if args.evaluate:
             zeroshot_results = zeroshot_transfer(model_without_ddp, zeroshot_dataloader, args.zs_dataset, tokenizer, device)
     
-        if utils.is_main_process():  
+        if utils.is_main_process() and args.evaluate:  
       
             val_result_coco = itm_eval(score_val_i2t_coco, score_val_t2i_coco, val_coco_loader.dataset.txt2img, val_coco_loader.dataset.img2txt)  
             print("coco val:", val_result_coco)
@@ -947,6 +953,6 @@ if __name__ == '__main__':
     Path(args.output_dir).mkdir(parents=True, exist_ok=True)
 
     json.dump(args.__dict__, open(os.path.join(args.output_dir, 'args.json'), 'w'), indent=2) 
-    shutil.copy('./models/losses.py', args.output_dir)
+    # shutil.copy('./models/losses.py', args.output_dir)
 
     main(args)
