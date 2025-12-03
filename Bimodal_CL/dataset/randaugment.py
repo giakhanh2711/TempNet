@@ -32,7 +32,7 @@ def autocontrast_func(img, cutoff=0):
             table = np.arange(n_bins) * scale + offset
             table[table < 0] = 0
             table[table > n_bins - 1] = n_bins - 1
-        table = table.clip(0, 255).astype(np.uint8)
+        table = table.clip(0, n_bins - 1).astype(np.uint8)
         return table[ch]
 
     channels = [tune_channel(ch) for ch in cv2.split(img)]
