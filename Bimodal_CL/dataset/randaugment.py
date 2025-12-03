@@ -11,7 +11,7 @@ def autocontrast_func(img, cutoff=0):
     '''
         same output as PIL.ImageOps.autocontrast
     '''
-    n_bins = 256
+    n_bins = 128
 
     def tune_channel(ch):
         n = ch.size
