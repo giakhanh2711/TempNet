@@ -8,7 +8,7 @@ import argparse
 
 import os
 os.environ["TOKENIZERS_PARALLELISM"] = "true"
-os.environ["TRANSFORMERS_OFFLINE"] = "true"
+os.environ["TRANSFORMERS_OFFLINE"] = "false"
 os.environ["CURL_CA_BUNDLE"] = ''
 
 import numpy as np
