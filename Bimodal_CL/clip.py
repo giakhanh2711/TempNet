@@ -714,7 +714,7 @@ def main(args):
     lr_scheduler, _ = create_scheduler(args, optimizer)
     if args.distributed:
         model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=args.text_encoder=='roberta-large')
-    model_without_ddp = model.module
+    model_without_ddp = model
 
     if args.use_amp:
         grad_scaler = torch.cuda.amp.GradScaler()
