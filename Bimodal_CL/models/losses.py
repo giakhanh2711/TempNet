@@ -391,7 +391,9 @@ class TempGenerator(torch.nn.Module):
         self.dropout = nn.Dropout(dropout_rate)
 
     def _init_prototypes(self, feats):
-        self.prototypes = torch.zeros(feats.size(0), feats.size(1), device=feats.device)
+        self.prototypes = nn.Parameter(
+                            torch.zeros(feats.size(0), feats.size(1), device=feats.device)
+                        )
         self.prototypes.data.copy_(feats)
 
     def forward(self, x, return_feats=False):
