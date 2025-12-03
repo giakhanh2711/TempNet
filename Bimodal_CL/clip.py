@@ -712,7 +712,8 @@ def main(args):
         assert optimizer_tempnet is None
 
     lr_scheduler, _ = create_scheduler(args, optimizer)
-    model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=args.text_encoder=='roberta-large')
+    if args.distributed:
+        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=args.text_encoder=='roberta-large')
     model_without_ddp = model.module
 
     if args.use_amp:
