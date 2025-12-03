@@ -369,7 +369,7 @@ class iSogCLR_Loss(nn.Module):
 
 
 class TempGenerator(torch.nn.Module):
-    def __init__(self, feature_dim, M=256, tau_min=0.005, dropout_rate=0.5, rho=6.0):
+    def __init__(self, feature_dim, M=128, tau_min=0.005, dropout_rate=0.5, rho=6.0):
         super(TempGenerator, self).__init__()
 
         self.feature_dim = feature_dim
