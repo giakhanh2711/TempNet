@@ -746,7 +746,7 @@ def main(args):
 
             score_val_i2t_flickr, score_val_t2i_flickr = evaluation(model_without_ddp, val_flickr_loader, tokenizer, device, args)
             score_test_i2t_flickr, score_test_t2i_flickr = evaluation(model_without_ddp, test_flickr_loader, tokenizer, device, args)
-            
+
             zeroshot_results = zeroshot_transfer(model_without_ddp, zeroshot_dataloader, args.zs_dataset, tokenizer, device)
     
         if utils.is_main_process() and args.evaluate:  
@@ -822,8 +822,10 @@ def main(args):
         if args.evaluate: 
             break
            
-        lr_scheduler.step(epoch+warmup_steps+1)  
-        dist.barrier()     
+        lr_scheduler.step(epoch+warmup_steps+1) 
+
+        # if args.distributed: 
+        #     dist.barrier()     
         torch.cuda.empty_cache()
 
     total_time = time.time() - start_time
